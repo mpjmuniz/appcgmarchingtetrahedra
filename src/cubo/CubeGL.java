@@ -33,15 +33,11 @@ public class CubeGL extends Cube implements ObjectGL {
     
     private int resolucao;
     
-    private String expressao;
-    
     //Constructor
-    public CubeGL(int resolucao, String expressao) {
+    public CubeGL(int resolucao) {
         super();
         
         this.resolucao = resolucao;
-        
-        this.expressao = expressao;
     }
 
     @Override
