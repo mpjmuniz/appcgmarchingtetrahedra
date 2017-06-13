@@ -44,12 +44,14 @@ public class Main {
         if(args.length < 1){
             System.out.println("Aviso: Você pode alterar a resolução da imagem gerada, fornecendo um inteiro além do nome do programa.");
         }
-        
-        GLPresenter example = new GLPresenter(args.length < 1 ? 
-                                                512 : Integer.parseInt(args[1]));
-        
         int width = 640;
         int height = 480;
+        GLPresenter example = new GLPresenter(args.length < 1 ? 
+                                                512 : Integer.parseInt(args[1]),
+                                              width,
+                                              height);
+        
+        
         
         // set up window and display
         Display.setDisplayMode(new DisplayMode(width, height));

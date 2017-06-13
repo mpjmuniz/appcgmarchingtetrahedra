@@ -16,7 +16,7 @@ import util.shader.ShaderProgram;
  *
  * @author marcoslage
  */
-public class CubeGL extends Cube implements ObjectGL {
+public class SuperficieGL extends Superficie implements ObjectGL {
 
     // Vertex Array Object Id
     private int vaoHandle;
@@ -31,13 +31,11 @@ public class CubeGL extends Cube implements ObjectGL {
     // Buffer with the Colors
     private FloatBuffer colorBuffer;
     
-    private int resolucao;
-    
     //Constructor
-    public CubeGL(int resolucao) {
-        super();
+    public SuperficieGL(int resolucao, int maxX, int maxY) {
+        super(resolucao, maxX, maxY);
+
         
-        this.resolucao = resolucao;
     }
 
     @Override

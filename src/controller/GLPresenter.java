@@ -5,7 +5,8 @@
  */
 package controller;
 
-import cubo.CubeGL;
+import cubo.SuperficieGL;
+import model.ilumination.Illuminator;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -15,10 +16,6 @@ import util.math.FastMath;
 import util.math.Matrix4f;
 import util.math.Vector3f;
 import util.projection.Projection;
-
-/* TODO:
-    implementar mudança de projeção
-    */
 
 /**
  *
@@ -37,7 +34,7 @@ public class GLPresenter {
     // Camera
     private Camera cam;
     // Creates a new cube
-    private CubeGL controller;
+    private SuperficieGL controller;
     private Matrix4f scaleMatrix;
     private float kD;
     private Vector3f diffuseColor;
@@ -48,6 +45,7 @@ public class GLPresenter {
     private float currentAngleY;
     // Projection Matrix
     private Projection proj;
+    private boolean projectionLocked;
     private Vector3f up;
     private float sN;
     // Light
@@ -59,36 +57,33 @@ public class GLPresenter {
     private Matrix4f projMatrix;
     private float kS;
     private Vector3f at;
+    
+    private Illuminator ilum;
 
-    public GLPresenter(int resolution){
-        kA = 0.4F;
-        kD = 0.5F;
+    public GLPresenter(int resolution, int width, int height){
+        ilum = new Illuminator();
+        
         scaleMatrix = new Matrix4f();
         modelMatrix = new Matrix4f();
-        controller = new CubeGL(resolution);
+        controller = new SuperficieGL(resolution, width, height);
         eye = new Vector3f(0.0F, 2.0F, 2.0F);
         
-        diffuseColor = new Vector3f(1.0F, 1.0F, 1.0F);
-        ambientColor = new Vector3f(1.0F, 1.0F, 1.0F);
         viewMatrix = new Matrix4f();
     
         // Animation:
         currentAngleX = 0.0F;
     
         // Projection Matrix
-        proj = new Projection(45, 1.3333F, 0.0F, 100.0F);
+        proj = new Projection(45, 1.3333F, 0.0F, 100.0F, 1.0f, -1.0f ,1.0f, -1.0f);
+        projectionLocked = false;
         up = new Vector3f(0.0F, 1.0F, 2.0F);
         sN = 60.0F;
-    
-        // Light
-        lightPos = new Vector3f(0.0F, 2.0F, -2.0F);
-        speclarColor = new Vector3f(1.0F, 1.0F, 1.0F);
         
         // Model Matrix:
         rotationMatrixY = new Matrix4f();
         rotationMatrixX = new Matrix4f();
         projMatrix = new Matrix4f();
-        kS = 0.1F;
+        
         at = new Vector3f(0.0F, 0.0F, 0.0F);
         cam = new Camera(eye, at, up);
     }
@@ -102,31 +97,35 @@ public class GLPresenter {
         scaleMatrix.m11 = 0.5F;
         scaleMatrix.m22 = 0.5F;
         scaleMatrix.m33 = 0.5F;
-        // light setup
-        controller.setVector("lightPos", lightPos);
-        controller.setVector("ambientColor", ambientColor);
-        controller.setVector("diffuseColor", diffuseColor);
-        controller.setVector("speclarColor", speclarColor);
-        controller.setFloat("kA", kA);
-        controller.setFloat("kD", kD);
-        controller.setFloat("kS", kS);
+        
+        // light setup // TODO: passar código para um controlador
+        controller.setVector("lightPos", ilum.getLightPos());
+        controller.setVector("ambientColor", ilum.getAmbientColor());
+        controller.setVector("diffuseColor", ilum.getDiffuseColor());
+        controller.setVector("speclarColor", ilum.getAmbientColor());
+        controller.setFloat("kA", ilum.getkA());
+        controller.setFloat("kD", ilum.getkD());
+        controller.setFloat("kS", ilum.getkS());
+        
         controller.setFloat("sN", sN);
+        
         while (Display.isCloseRequested() == false) {
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
             GL11.glEnable(GL11.GL_CULL_FACE);
             GL11.glCullFace(GL11.GL_BACK);
             // Projection and View Matrix Setup
-            projMatrix.setTo(proj.perspective());
+            pollProjection();
+           
             viewMatrix.setTo(cam.viewMatrix());
             
             modelMatrix.setToIdentity();
-            pollInput();
+            pollRotation();
             modelMatrix.multiply(rotationMatrixY);
             modelMatrix.multiply(rotationMatrixX);
             modelMatrix.multiply(scaleMatrix);
             controller.setMatrix("modelmatrix", modelMatrix);
             controller.setMatrix("viewmatrix", viewMatrix);
-            controller.setMatrix("projection", projMatrix);
+            controller.setMatrix("projectionmatrix", projMatrix);
             controller.render();
             // check for errors
             if (GL11.GL_NO_ERROR != GL11.glGetError()) {
@@ -144,12 +143,9 @@ public class GLPresenter {
      * Função responsável por tratar eventos de entrada/saída,
      * no caso interface de rotações do objeto e troca de projeções
      *
-     * TODO: implementar chamamento das funções na SuperficieGL
      */
-    private void pollInput() {
-        if (Keyboard.isKeyDown(Keyboard.KEY_O)) {
-            throw new UnsupportedOperationException("Troca de proje\u00e7\u00e3o n\u00e3o implementada");
-        } else if (Keyboard.isKeyDown(Keyboard.KEY_L)) {
+    private void pollRotation() {
+        if (Keyboard.isKeyDown(Keyboard.KEY_L)) {
             rotateL();
         } else if (Keyboard.isKeyDown(Keyboard.KEY_R)) {
             rotateR();
@@ -158,6 +154,24 @@ public class GLPresenter {
         } else if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
             rotateB();
         }
+    }
+    
+    /**
+     * Função responsável por tratar eventos de mudança da projeção,
+     * no caso interface de rotações do objeto e troca de projeções
+     *
+     * TODO: implementar chamamento das funções na SuperficieGL
+     */
+    private void pollProjection() {
+        if( Keyboard.isKeyDown(Keyboard.KEY_O)){
+            if(!projectionLocked){
+                projectionLocked = true;
+                projMatrix.setTo(proj.changeProjection());
+            }
+        } else {
+            projectionLocked = false;
+            projMatrix.setTo(proj.getProjection());
+        }      
     }
     
     private void rotateC(){

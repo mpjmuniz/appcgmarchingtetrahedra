@@ -5,41 +5,63 @@ layout (location = 1) in vec4 normal;
 layout (location = 2) in vec4 color;
 
 //matrix
-uniform mat4 modelmatrix;
-uniform mat4 viewmatrix;
-uniform mat4 projection;
+uniform mat4 modelmatrix,
+			 viewmatrix,
+			 projectionmatrix;
 
 //light parameters
 uniform vec3 lightPos;
-uniform vec3 ambientColor; 
-uniform vec3 diffuseColor;
-uniform vec3 speclarColor;
-uniform float kA, kD, kS, sN;
+
+uniform vec3 ambientColor,
+			 diffuseColor,
+			 speclarColor;
+uniform float kA, 
+			  kD, 
+			  kS, 
+			  sN;
 
 //vertex color
-smooth out vec4 theColor;
+smooth out vec4 theColor,
+	   			thePositionWorld,
+	   			newNormal,
+	   			thePosition;
+
+//light parameters
+smooth out vec3 theLightPos;
+
+smooth out vec3 theAmbColor,
+	   			theDifColor,
+	   			theSpeColor;
+
+smooth out float kAO,
+	   			 kDO,
+	   			 kSO,
+	   			 sNO;
+
+smooth out mat4 theModelView;
 
 void main()
 {
     mat4 modelView = viewmatrix * modelmatrix;
+    theModelView = modelView;
     mat4 normalMatrix = transpose(inverse(modelView));
 
     // final vertex position
-    gl_Position = projection * modelView * position;
+    gl_Position = projectionmatrix * modelView * position;
 
-    vec4 positionWorld = modelmatrix * position;
-    vec4 newNormal = normalize(normalMatrix * normal);
+    thePositionWorld = modelmatrix * position;
+    newNormal = normalize(normalMatrix * normal);
 
-    //diffuse
-    vec3 lightDir = normalize(lightPos - positionWorld.xyz);
-    float iD = max(0.0, dot(lightDir, newNormal.xyz));
+    theLightPos = lightPos;
+    theAmbColor = ambientColor;
+    theSpeColor = speclarColor;
+    theDifColor = diffuseColor;
 
-    //specular
-    vec3  v  = -normalize((modelView * position).xyz);
-    vec3  h  =  normalize(lightDir + v);
-    float iS =  pow(max(0.0, dot(newNormal.xyz, h)), sN);
+    kAO = kA;
+    kDO = kD;
+    kSO = kS;
+	sNO = sN;
 
-    vec3 lightFactor = kA * ambientColor + kD * iD * diffuseColor + kS * iS * speclarColor;
-
-    theColor = vec4(color.rgb * lightFactor, color.a);
+	theColor = color;
+	thePosition = position;
 }
