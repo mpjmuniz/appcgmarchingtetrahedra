@@ -3,7 +3,7 @@
  *
  * This file is part of the Pretty Cool Graphics Library (PCGL).
  */
-package util.math;
+package model.math;
 
 import java.util.Random;
 

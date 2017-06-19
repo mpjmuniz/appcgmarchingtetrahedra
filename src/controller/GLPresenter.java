@@ -5,17 +5,17 @@
  */
 package controller;
 
-import cubo.SuperficieGL;
+import model.objects.SuperficieGL;
 import model.ilumination.Illuminator;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
-import util.camera.Camera;
-import util.math.FastMath;
-import util.math.Matrix4f;
-import util.math.Vector3f;
-import util.projection.Projection;
+import model.camera.Camera;
+import model.math.FastMath;
+import model.math.Matrix4f;
+import model.math.Vector3f;
+import model.projection.Projection;
 
 /**
  *
@@ -27,7 +27,6 @@ import util.projection.Projection;
 public class GLPresenter {
 
     // View Matrix
-    private Vector3f eye;
     private float kA;
     // Final Matrix
     private Matrix4f modelMatrix;
@@ -36,9 +35,6 @@ public class GLPresenter {
     // Creates a new cube
     private SuperficieGL controller;
     private Matrix4f scaleMatrix;
-    private float kD;
-    private Vector3f diffuseColor;
-    private Vector3f ambientColor;
     private Matrix4f viewMatrix;
     // Animation:
     private float currentAngleX;
@@ -46,17 +42,11 @@ public class GLPresenter {
     // Projection Matrix
     private Projection proj;
     private boolean projectionLocked;
-    private Vector3f up;
     private float sN;
-    // Light
-    private Vector3f lightPos;
-    private Vector3f speclarColor;
     // Model Matrix:
     private Matrix4f rotationMatrixY;
     private Matrix4f rotationMatrixX;
     private Matrix4f projMatrix;
-    private float kS;
-    private Vector3f at;
     
     private Illuminator ilum;
 
@@ -65,8 +55,8 @@ public class GLPresenter {
         
         scaleMatrix = new Matrix4f();
         modelMatrix = new Matrix4f();
-        controller = new SuperficieGL(resolution, width, height);
-        eye = new Vector3f(0.0F, 2.0F, 2.0F);
+        controller = new SuperficieGL(resolution);
+        
         
         viewMatrix = new Matrix4f();
     
@@ -74,9 +64,9 @@ public class GLPresenter {
         currentAngleX = 0.0F;
     
         // Projection Matrix
-        proj = new Projection(45, 1.3333F, 0.0F, 100.0F, 1.0f, -1.0f ,1.0f, -1.0f);
+        proj = new Projection(45, 1.333f, 0.0F, 100.0F, 1.0f, -1.0f ,1.0f, -1.0f);
         projectionLocked = false;
-        up = new Vector3f(0.0F, 1.0F, 2.0F);
+        
         sN = 60.0F;
         
         // Model Matrix:
@@ -84,7 +74,9 @@ public class GLPresenter {
         rotationMatrixX = new Matrix4f();
         projMatrix = new Matrix4f();
         
-        at = new Vector3f(0.0F, 0.0F, 0.0F);
+        Vector3f at = new Vector3f(0.0F, 0f, 0F);
+        Vector3f eye = new Vector3f(0.0F, 2F, 2F);
+        Vector3f up = new Vector3f(0.0F, 1.0F, 2.0F);
         cam = new Camera(eye, at, up);
     }
     

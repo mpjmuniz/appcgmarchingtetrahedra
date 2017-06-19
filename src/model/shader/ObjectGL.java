@@ -1,4 +1,4 @@
-package util.shader;
+package model.shader;
 
 /**
  *

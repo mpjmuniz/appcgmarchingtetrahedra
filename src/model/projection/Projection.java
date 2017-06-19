@@ -1,7 +1,7 @@
-package util.projection;
+package model.projection;
 
-import util.math.FastMath;
-import util.math.Matrix4f;
+import model.math.FastMath;
+import model.math.Matrix4f;
 
 /**
  *
@@ -9,14 +9,14 @@ import util.math.Matrix4f;
  */
 public class Projection {
     
-    private float fovY   = 0.0f;
-    private float aspect = 0.0f;
-    private float zNear  = 0.0f;
-    private float zFar   = 0.0f;
-    private float right  = 0.0f;
-    private float left   = 0.0f;
-    private float top  = 0.0f;
-    private float bottom   = 0.0f;
+    private float fovY;
+    private float aspect;
+    private float zNear;
+    private float zFar;
+    private float right;
+    private float left;
+    private float top;
+    private float bottom;
     
     boolean isPerspective;
     
@@ -31,7 +31,7 @@ public class Projection {
         this.right = right;
         this.left = left;
         
-        this.isPerspective = false;
+        this.isPerspective = true;
     }
     
     public Matrix4f perspective() {

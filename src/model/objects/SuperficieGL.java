@@ -1,4 +1,4 @@
-package cubo;
+package model.objects;
 
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
@@ -7,10 +7,10 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import util.math.Matrix4f;
-import util.math.Vector3f;
-import util.shader.ObjectGL;
-import util.shader.ShaderProgram;
+import model.math.Matrix4f;
+import model.math.Vector3f;
+import model.shader.ObjectGL;
+import model.shader.ShaderProgram;
 
 /**
  *
@@ -31,11 +31,10 @@ public class SuperficieGL extends Superficie implements ObjectGL {
     // Buffer with the Colors
     private FloatBuffer colorBuffer;
     
+    
     //Constructor
-    public SuperficieGL(int resolucao, int maxX, int maxY) {
-        super(resolucao, maxX, maxY);
-
-        
+    public SuperficieGL(int resolucao) {
+        super(resolucao);
     }
 
     @Override
@@ -149,55 +148,22 @@ public class SuperficieGL extends Superficie implements ObjectGL {
         GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3*nfaces);
     }
     
+    //subst
     @Override
     public void fillVBOs() {
         // convert vertex array to buffer
-        positionBuffer = BufferUtils.createFloatBuffer(4 * 3 * 12); //4(coordinates)*3(vertices)*12(triangles)
+        positionBuffer = BufferUtils.createFloatBuffer(4 * 3 * triangles.size()); //4(coordinates)*3(vertices)*12(triangles)
         // convert vertex array to buffer
-        normalBuffer = BufferUtils.createFloatBuffer(4 * 3 * 12); //4(coordinates)*3(vertices)*12(triangles)
+        normalBuffer = BufferUtils.createFloatBuffer(4 * 3 * triangles.size()); //4(coordinates)*3(vertices)*12(triangles)
         // convert color array to buffer
-        colorBuffer = BufferUtils.createFloatBuffer(4 * 3 * 12); //4(coordinates)*3(vertices)*12(triangles)
+        colorBuffer = BufferUtils.createFloatBuffer(4 * 3 * triangles.size()); //4(coordinates)*3(vertices)*12(triangles)
 
-        // bluid the quad faces 
-        buildQuad(1, 0, 3, 2);
-        buildQuad(2, 3, 7, 6);
-        buildQuad(3, 0, 4, 7);
-        buildQuad(6, 5, 1, 2);
-        buildQuad(4, 5, 6, 7);
-        buildQuad(5, 4, 0, 1);
+        for(Triangle tri : triangles){
+            tri.storeTri(positionBuffer, normalBuffer, colorBuffer);
+        }
 
         positionBuffer.flip();
         normalBuffer.flip();
         colorBuffer.flip();
-    }
-
-    // private methods
-
-    private void buildQuad(int a, int b, int c, int d) {
-        positions.get(a).store(positionBuffer);
-        positions.get(c).store(positionBuffer);
-        positions.get(b).store(positionBuffer);
-
-        positions.get(a).store(positionBuffer);
-        positions.get(d).store(positionBuffer);
-        positions.get(c).store(positionBuffer);
-        
-                
-        positions.get(a).store(normalBuffer);
-        positions.get(c).store(normalBuffer);
-        positions.get(b).store(normalBuffer);
-
-        positions.get(a).store(normalBuffer);
-        positions.get(d).store(normalBuffer);
-        positions.get(c).store(normalBuffer);
-        
-        
-        colors.get(a).store(colorBuffer);
-        colors.get(c).store(colorBuffer);
-        colors.get(b).store(colorBuffer);
-
-        colors.get(a).store(colorBuffer);
-        colors.get(d).store(colorBuffer);
-        colors.get(c).store(colorBuffer);
     }
 }

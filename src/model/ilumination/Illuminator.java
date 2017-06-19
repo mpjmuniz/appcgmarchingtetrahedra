@@ -5,7 +5,7 @@
  */
 package model.ilumination;
 
-import util.math.Vector3f;
+import model.math.Vector3f;
 
 /**
  *

@@ -1,7 +1,7 @@
-package util.camera;
+package model.camera;
 
-import util.math.Matrix4f;
-import util.math.Vector3f;
+import model.math.Matrix4f;
+import model.math.Vector3f;
 
 /**
  *

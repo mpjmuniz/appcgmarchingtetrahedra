@@ -47,7 +47,7 @@ public class Main {
         int width = 640;
         int height = 480;
         GLPresenter example = new GLPresenter(args.length < 1 ? 
-                                                512 : Integer.parseInt(args[1]),
+                                                100 : Integer.parseInt(args[1]),
                                               width,
                                               height);
         
