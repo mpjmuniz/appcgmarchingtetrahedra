@@ -56,7 +56,7 @@ class Superficie {
         positions = new ArrayList<>();
         colors    = new ArrayList<>();
         triangles = new ArrayList<>();
-        /*
+        
         grid = new float[qtdPontos][qtdPontos][qtdPontos];
         
         float xrange = 2, yrange = 2, zrange = 2,
@@ -109,8 +109,8 @@ class Superficie {
                 }
             }
         }
-        */
         
+        /*
         // Fill the vertices
         positions.add( new Vector4f(-1f,-1f, 1f, 1.0f) );
         positions.add( new Vector4f(-1f, 1f, 1f, 1.0f) );
@@ -136,8 +136,11 @@ class Superficie {
         triangularize(3, 0, 4, 7);
         triangularize(6, 5, 1, 2);
         triangularize(4, 5, 6, 7);
-        triangularize(5, 4, 0, 1);
+        triangularize(5, 4, 0, 1);*/
 
+        nverts = 1;
+        nfaces = triangles.size();
+        
     }
     
     private void triangularize(int a, int b, int c, int d){
